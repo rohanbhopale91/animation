@@ -1,65 +1,30 @@
-import React, { useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { Edges } from '@react-three/drei';
-
-
-function MovingCube({ speed, isPlaying }) {
-  const ref = useRef();
-
-  useFrame(() => {
-    if (isPlaying && ref.current) {
-      // Move the cube on the X-axis
-      ref.current.position.x += speed;
-      if (ref.current.position.x > 5) {
-        ref.current.position.x = -5; // Loop back to left
-      }
-    }
-  });
-
-  return (
-    <mesh ref={ref} position={[-5, 0, 0]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="orange" />
-    </mesh>
-  );
-}
-
-function BoundaryBox() {
-  return (
-    <mesh position={[0, 0, 0]} scale={[10, 1, 1]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshBasicMaterial transparent opacity={0} />
-      <Edges scale={1.01} threshold={15}>
-        <lineBasicMaterial color="gray" transparent opacity={0.2} />
-      </Edges>
-
-    </mesh>
-  );
-}
+import React from 'react';
+import AnimationCanvas from './canvas/AnimationCanvas';
+import useAnimationConfig from './config/useAnimationConfig';
 
 function App() {
-  const [speed, setSpeed] = useState(0.01);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { speed, setSpeed, isPlaying, setIsPlaying } = useAnimationConfig();
 
   return (
-    <div style={{ height: '100vh' }}>
-      <Canvas camera={{ position: [0, 0, 10], fov: 60 }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[0, 5, 5]} />
-        <OrbitControls />
-        <MovingCube speed={speed} isPlaying={isPlaying} />
-        <BoundaryBox /> {/* Boundary Box */}
-      </Canvas>
-
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Menu Bar */}
       <div
         style={{
-          position: 'absolute',
-          top: 20,
-          left: 20,
-          background: 'white',
-          padding: 10,
-          borderRadius: 8,
+          background: '#282c34',
+          color: 'white',
+          padding: '10px 20px',
+          fontSize: '18px',
+        }}
+      >
+        Menu Bar
+      </div>
+
+      {/* Configuration Panel */}
+      <div
+        style={{
+          background: '#f4f4f4',
+          padding: '20px',
+          borderBottom: '1px solid #ccc',
         }}
       >
         <label>
@@ -85,6 +50,11 @@ function App() {
         >
           ⏸ Pause
         </button>
+      </div>
+
+      {/* Animation Canvas */}
+      <div style={{ flex: 1, position: 'relative' }}>
+        <AnimationCanvas speed={speed} isPlaying={isPlaying} />
       </div>
     </div>
   );
